@@ -1,12 +1,14 @@
 import React from "react";
-import { Search, Filter } from "lucide-react";
-import type { FilterStyle } from "@/@types/painting";
+import { Search, Filter, Settings } from "lucide-react";
+import type { FilterStyle, FilterStatus } from "@/@types/painting";
 
 interface SearchAndFilterProps {
   searchTerm: string;
   onSearchChange: (value: string) => void;
   filterStyle: FilterStyle;
   onFilterChange: (value: FilterStyle) => void;
+  filterStatus: FilterStatus;
+  onStatusFilterChange: (value: FilterStatus) => void;
 }
 
 const PaintingSearchAndFilter: React.FC<SearchAndFilterProps> = ({
@@ -14,6 +16,8 @@ const PaintingSearchAndFilter: React.FC<SearchAndFilterProps> = ({
   onSearchChange,
   filterStyle,
   onFilterChange,
+  filterStatus,
+  onStatusFilterChange,
 }) => {
   return (
     <div className="bg-white p-4 rounded-lg shadow-sm border">
@@ -38,6 +42,20 @@ const PaintingSearchAndFilter: React.FC<SearchAndFilterProps> = ({
             <option value="all">All Styles</option>
             <option value="horizontal">Horizontal</option>
             <option value="vertical">Vertical</option>
+          </select>
+        </div>
+        <div className="flex items-center gap-2">
+          <Settings className="h-4 w-4 text-gray-400" />
+          <select
+            value={filterStatus}
+            onChange={(e) =>
+              onStatusFilterChange(e.target.value as FilterStatus)
+            }
+            className="px-3 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+          >
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
           </select>
         </div>
       </div>

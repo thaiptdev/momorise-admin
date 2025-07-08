@@ -1,4 +1,9 @@
-import type { FilterStyle, ModalType, Painting } from "@/@types/painting";
+import type {
+  FilterStyle,
+  FilterStatus,
+  ModalType,
+  Painting,
+} from "@/@types/painting";
 import React, { useState } from "react";
 import { usePaintings } from "@/hooks/usePaintings";
 import { Alert, AlertDescription } from "@/components/ui/alert";
@@ -8,6 +13,8 @@ import PaintingSearchAndFilter from "../../components/layouts/paintings-manageme
 import PaintingManagementTable from "../../components/layouts/paintings-management/painting-management-table";
 import PaintingStatsCards from "../../components/layouts/paintings-management/painting-stats-cards";
 import PaintingModals from "../../components/layouts/paintings-management/painting-modals";
+import { toast } from "sonner";
+import { Toaster } from "@/components/ui/toaster";
 
 const PaintingManagement: React.FC = () => {
   const {
@@ -26,6 +33,7 @@ const PaintingManagement: React.FC = () => {
   const [modalType, setModalType] = useState<ModalType>(null);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterStyle, setFilterStyle] = useState<FilterStyle>("all");
+  const [filterStatus, setFilterStatus] = useState<FilterStatus>("all");
 
   const filteredPaintings = paintings.filter((painting) => {
     const matchesSearch =
@@ -33,7 +41,11 @@ const PaintingManagement: React.FC = () => {
       painting.author.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesFilter =
       filterStyle === "all" || painting.style === filterStyle;
-    return matchesSearch && matchesFilter;
+    const matchesStatus =
+      filterStatus === "all" ||
+      (filterStatus === "active" && painting.status.active) ||
+      (filterStatus === "inactive" && !painting.status.active);
+    return matchesSearch && matchesFilter && matchesStatus;
   });
 
   const handleView = (painting: Painting): void => {
@@ -59,26 +71,40 @@ const PaintingManagement: React.FC = () => {
   const handleUpdatePainting = async (
     updatedPainting: Painting
   ): Promise<void> => {
+    // Count active paintings (excluding the one being updated if it was already active)
+    const activeCount =
+      paintings.filter((p) => p.status.active && p.id !== updatedPainting.id)
+        .length + (updatedPainting.status.active ? 1 : 0);
+    if (updatedPainting.status.active && activeCount > 6) {
+      toast.warning("You can only have 6 active paintings at once.");
+      return;
+    }
     try {
       await updatePainting(updatedPainting.id, updatedPainting);
       setModalType(null);
       setSelectedPainting(null);
     } catch (err) {
       console.error("Failed to update painting:", err);
-      // You might want to show a toast notification here
+      toast.error("Failed to update painting.");
     }
   };
 
   const handleAddNewPainting = async (
     newPainting: Omit<Painting, "id">
   ): Promise<void> => {
+    // Count active paintings
+    const activeCount = paintings.filter((p) => p.status.active).length;
+    if (newPainting.status.active && activeCount >= 6) {
+      toast.warning("You can only have 6 active paintings at once.");
+      return;
+    }
     try {
       await addPainting(newPainting);
       setModalType(null);
       setSelectedPainting(null);
     } catch (err) {
       console.error("Failed to add painting:", err);
-      // You might want to show a toast notification here
+      toast.error("Failed to add painting.");
     }
   };
 
@@ -143,6 +169,7 @@ const PaintingManagement: React.FC = () => {
 
   return (
     <div className="space-y-6">
+      <Toaster position="top-center" />
       <PaintingManagementHeader onAddPainting={handleAddPainting} />
 
       <PaintingSearchAndFilter
@@ -150,6 +177,8 @@ const PaintingManagement: React.FC = () => {
         onSearchChange={setSearchTerm}
         filterStyle={filterStyle}
         onFilterChange={setFilterStyle}
+        filterStatus={filterStatus}
+        onStatusFilterChange={setFilterStatus}
       />
 
       <PaintingManagementTable

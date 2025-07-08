@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 import React from "react";
-import { Eye, Edit, Trash2 } from "lucide-react";
+import { Eye, Edit, Trash2, Hash } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Switch } from "@/components/ui/switch";
 import type { Painting } from "@/@types/painting";
@@ -69,6 +69,8 @@ const PaintingManagementTable: React.FC<PaintingManagementTableProps> = ({
                   "Author",
                   "Content",
                   "Style",
+                  "Status",
+                  "Order",
                   "Actions",
                 ].map((heading) => (
                   <th
@@ -123,6 +125,35 @@ const PaintingManagementTable: React.FC<PaintingManagementTableProps> = ({
                       <span className="text-sm text-gray-600">
                         {painting.style}
                       </span>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center space-x-2">
+                      {painting.status ? (
+                        <>
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              painting.status.active
+                                ? "bg-green-500"
+                                : "bg-red-500"
+                            }`}
+                          />
+                          <span className="text-sm text-gray-600">
+                            {painting.status.active ? "Active" : "Inactive"}
+                          </span>
+                        </>
+                      ) : (
+                        <>
+                          <div className="w-2 h-2 rounded-full bg-gray-300" />
+                          <span className="text-sm text-gray-400">Unknown</span>
+                        </>
+                      )}
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    <div className="flex items-center space-x-2">
+                      <Hash className="w-4 h-4 text-gray-400" />
+                      <span>{painting.status?.order ?? "N/A"}</span>
                     </div>
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">

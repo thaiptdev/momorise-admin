@@ -35,6 +35,7 @@ export const EditPaintingModal: React.FC<EditPaintingModalProps> = ({
         content: painting.content,
         style: painting.style,
         thumbnail: painting.thumbnail,
+        status: painting.status,
       });
     }
   }, [painting]);

@@ -9,7 +9,15 @@ import {
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { User, Palette, FileText, X, ImageIcon } from "lucide-react";
+import {
+  User,
+  Palette,
+  FileText,
+  X,
+  ImageIcon,
+  Settings,
+  Hash,
+} from "lucide-react";
 import type { Painting } from "@/@types/painting";
 
 interface ViewPaintingModalProps {
@@ -109,10 +117,51 @@ export const ViewPaintingModal: React.FC<ViewPaintingModalProps> = ({
                     <div className="pl-6">
                       <Badge
                         variant="secondary"
-                        className="capitalize bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 border-0 px-3 py-1"
+                        className={`capitalize border-0 px-3 py-1 ${
+                          painting.style === "vertical"
+                            ? "bg-green-100 text-green-800"
+                            : "bg-red-100 text-red-800"
+                        }`}
                       >
-                        {painting.style}
+                        {painting.style === "vertical"
+                          ? "Vertical"
+                          : "Horizontal"}
                       </Badge>
+                    </div>
+                  </div>
+
+                  {/* Status Information */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Settings className="w-4 h-4" />
+                        <span className="text-sm font-medium">Status</span>
+                      </div>
+                      <div className="pl-6">
+                        <Badge
+                          variant="secondary"
+                          className={`capitalize border-0 px-3 py-1 ${
+                            painting.status?.active
+                              ? "bg-green-100 text-green-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {painting.status?.active ? "Active" : "Inactive"}
+                        </Badge>
+                      </div>
+                    </div>
+                    <div className="space-y-3">
+                      <div className="flex items-center gap-2 text-gray-600">
+                        <Hash className="w-4 h-4" />
+                        <span className="text-sm font-medium">
+                          Display Order
+                        </span>
+                      </div>
+                      <div className="pl-6">
+                        <p className="text-lg font-semibold text-gray-900">
+                          {painting.status?.order ?? "N/A"}
+                        </p>
+                      </div>
                     </div>
                   </div>
 
